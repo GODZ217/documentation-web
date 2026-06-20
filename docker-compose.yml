@@ -1,0 +1,9 @@
+services:
+  godz-docs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: godz-documentation
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
