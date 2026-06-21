@@ -106,7 +106,7 @@ export function InteractiveTerminal() {
 
         {/* Terminal Body */}
         <div
-          className="p-4 font-mono text-sm min-h-[320px] max-h-[400px] overflow-y-auto space-y-1"
+          className="p-3 sm:p-4 font-mono text-[11px] sm:text-sm min-h-[180px] sm:min-h-[320px] max-h-[260px] sm:max-h-[400px] overflow-y-auto space-y-1"
           onClick={() => inputRef.current?.focus()}
         >
           <AnimatePresence>
@@ -118,14 +118,14 @@ export function InteractiveTerminal() {
                 transition={{ duration: 0.15 }}
               >
                 {entry.type === "input" ? (
-                  <div className="text-green-400/90">
+                  <div className="text-green-400/90 text-[11px] sm:text-sm">
                     <span className="text-blue-400">$ </span>
                     {entry.text.slice(2)}
                   </div>
                 ) : entry.type === "system" ? (
-                  <div className="text-blue-400/60 italic text-xs">{entry.text}</div>
+                  <div className="text-blue-400/60 italic text-[10px] sm:text-xs">{entry.text}</div>
                 ) : (
-                  <pre className="text-gray-300 whitespace-pre-wrap font-mono text-xs leading-relaxed">
+                  <pre className="text-gray-300 whitespace-pre-wrap font-mono text-[10px] sm:text-xs leading-relaxed">
                     {entry.text}
                   </pre>
                 )}
@@ -136,15 +136,15 @@ export function InteractiveTerminal() {
         </div>
 
         {/* Terminal Input */}
-        <form onSubmit={handleSubmit} className="border-t border-blue-500/10 px-4 py-3 flex items-center gap-2">
-          <span className="text-green-400 font-mono text-sm">$</span>
+        <form onSubmit={handleSubmit} className="border-t border-blue-500/10 px-3 sm:px-4 py-2 sm:py-3 flex items-center gap-2">
+          <span className="text-green-400 font-mono text-xs sm:text-sm">$</span>
           <input
             ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type a command..."
-            className="flex-1 bg-transparent border-none outline-none text-gray-200 font-mono text-sm placeholder-gray-600"
+            className="flex-1 bg-transparent border-none outline-none text-gray-200 font-mono text-xs sm:text-sm placeholder-gray-600"
             disabled={isTyping}
             autoComplete="off"
             spellCheck={false}
@@ -158,8 +158,8 @@ export function InteractiveTerminal() {
           </button>
         </form>
 
-        {/* Quick Suggestions */}
-        <div className="flex flex-wrap gap-1.5 px-4 pb-3">
+        {/* Quick Suggestions - hide on mobile except first 3 */}
+        <div className="hidden sm:flex flex-wrap gap-1.5 px-4 pb-3">
           {commands.slice(0, 5).map((c) => (
             <button
               key={c.cmd}
@@ -167,6 +167,17 @@ export function InteractiveTerminal() {
               className="text-[10px] px-2 py-1 rounded-md bg-blue-500/10 text-blue-400/70 hover:bg-blue-500/20 hover:text-blue-300 transition-all font-mono"
             >
               {c.cmd.length > 30 ? c.cmd.slice(0, 28) + ".." : c.cmd}
+            </button>
+          ))}
+        </div>
+        <div className="flex sm:hidden flex-wrap gap-1 px-3 pb-2">
+          {commands.slice(0, 3).map((c) => (
+            <button
+              key={c.cmd}
+              onClick={() => handleSuggestionClick(c.cmd)}
+              className="text-[9px] px-1.5 py-1 rounded-md bg-blue-500/10 text-blue-400/70 hover:bg-blue-500/20 hover:text-blue-300 transition-all font-mono truncate max-w-[120px]"
+            >
+              {c.cmd.length > 18 ? c.cmd.slice(0, 16) + ".." : c.cmd}
             </button>
           ))}
         </div>

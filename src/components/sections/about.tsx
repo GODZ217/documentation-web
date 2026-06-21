@@ -54,19 +54,19 @@ const experience = [
 
 export function About() {
   return (
-    <section id="about" className="py-20">
+    <section id="about" className="py-12 sm:py-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+          <h2 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">
             About <span className="text-gradient">Me</span>
           </h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-gray-400 max-w-2xl mx-auto">
             DevOps and DevSecOps engineer with expertise in building secure, scalable, and automated infrastructure.
           </p>
         </motion.div>
@@ -76,9 +76,9 @@ export function About() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center max-w-3xl mx-auto mb-16"
+          className="text-center max-w-3xl mx-auto mb-10 sm:mb-16"
         >
-          <p className="text-gray-400 leading-relaxed">
+          <p className="text-xs sm:text-base text-gray-400 leading-relaxed">
             I specialize in designing and implementing end-to-end DevOps and DevSecOps pipelines that enable
             organizations to deliver software rapidly, reliably, and securely. With deep expertise in cloud
             infrastructure, containerization, and automation, I help teams adopt modern engineering practices
@@ -86,7 +86,7 @@ export function About() {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-10 sm:mb-16">
           {highlights.map((item, index) => (
             <motion.div
               key={item.title}
@@ -94,13 +94,13 @@ export function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="glass glass-hover rounded-xl p-6"
+              className="glass glass-hover rounded-xl p-4 sm:p-6"
             >
-              <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-4">
-                <item.icon className="w-6 h-6 text-blue-400" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-blue-500/10 flex items-center justify-center mb-3 sm:mb-4">
+                <item.icon className="w-5 h-5 sm:w-6 sm:h-6 text-blue-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-100 mb-2">{item.title}</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">{item.description}</p>
+              <h3 className="text-sm sm:text-lg font-semibold text-gray-100 mb-1 sm:mb-2">{item.title}</h3>
+              <p className="text-xs sm:text-sm text-gray-400 leading-relaxed">{item.description}</p>
             </motion.div>
           ))}
         </div>
@@ -112,19 +112,19 @@ export function About() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="glass rounded-xl p-8"
+            className="glass rounded-xl p-5 sm:p-8"
           >
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 sm:mb-6">
               <div>
-                <h3 className="text-xl font-semibold text-gray-100">{exp.role}</h3>
-                <p className="text-sm text-blue-400">{exp.company}</p>
+                <h3 className="text-base sm:text-xl font-semibold text-gray-100">{exp.role}</h3>
+                <p className="text-xs sm:text-sm text-blue-400">{exp.company}</p>
               </div>
-              <span className="text-sm text-gray-500">{exp.period}</span>
+              <span className="text-xs sm:text-sm text-gray-500">{exp.period}</span>
             </div>
-            <div className="grid sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               {exp.items.map((item) => (
-                <div key={item} className="flex items-start gap-3 text-sm text-gray-400">
-                  <CheckCircle2 className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
+                <div key={item} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-400">
+                  <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-blue-400 mt-0.5 shrink-0" />
                   {item}
                 </div>
               ))}

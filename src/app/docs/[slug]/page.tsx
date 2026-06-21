@@ -23,8 +23,8 @@ function parseContent(content: string) {
     if (line.startsWith("```")) {
       if (inCodeBlock) {
         elements.push(
-          <pre key={`code-${i}`} className="bg-[#0a1628] rounded-xl p-4 overflow-x-auto border border-blue-500/10 my-4">
-            <code className="text-sm text-gray-300 font-mono">{codeBlock.join("\n")}</code>
+          <pre key={`code-${i}`} className="bg-[#0a1628] rounded-lg sm:rounded-xl p-3 sm:p-4 overflow-x-auto border border-blue-500/10 my-3 sm:my-4 text-[10px] sm:text-sm">
+            <code className="text-gray-300 font-mono">{codeBlock.join("\n")}</code>
           </pre>
         )
         codeBlock = []
@@ -44,27 +44,27 @@ function parseContent(content: string) {
 
     if (line.startsWith("### ")) {
       elements.push(
-        <h3 key={i} className="text-xl font-semibold text-gray-100 mt-8 mb-3">
+        <h3 key={i} className="text-base sm:text-xl font-semibold text-gray-100 mt-6 sm:mt-8 mb-2 sm:mb-3">
           {line.slice(4)}
         </h3>
       )
     } else if (line.startsWith("## ")) {
       elements.push(
-        <h2 key={i} className="text-2xl font-bold text-blue-300 mt-10 mb-4">
+        <h2 key={i} className="text-lg sm:text-2xl font-bold text-blue-300 mt-6 sm:mt-10 mb-3 sm:mb-4">
           {line.slice(3)}
         </h2>
       )
     } else if (line.startsWith("- ")) {
       elements.push(
-        <li key={i} className="text-gray-400 ml-4 mb-1 list-disc list-inside">
+        <li key={i} className="text-xs sm:text-sm text-gray-400 ml-4 mb-1 list-disc list-inside">
           {inlineFormat(line.slice(2))}
         </li>
       )
     } else if (line.trim() === "") {
-      elements.push(<div key={i} className="h-2" />)
+      elements.push(<div key={i} className="h-1 sm:h-2" />)
     } else {
       elements.push(
-        <p key={i} className="text-gray-400 leading-relaxed mb-2">
+        <p key={i} className="text-xs sm:text-sm text-gray-400 leading-relaxed mb-1 sm:mb-2">
           {inlineFormat(line)}
         </p>
       )
@@ -84,11 +84,11 @@ function parseContent(content: string) {
 }
 
 function inlineFormat(text: string): React.ReactNode {
-  const parts = text.split(/(\`[^\`]+\`)/g)
+    const parts = text.split(/(\`[^\`]+\`)/g)
   return parts.map((part, i) => {
     if (part.startsWith("`") && part.endsWith("`")) {
       return (
-        <code key={i} className="bg-blue-500/10 text-blue-300 px-1.5 py-0.5 rounded text-sm font-mono">
+        <code key={i} className="bg-blue-500/10 text-blue-300 px-1 py-0.5 rounded text-xs sm:text-sm font-mono">
           {part.slice(1, -1)}
         </code>
       )
@@ -147,18 +147,18 @@ export default function DocArticlePage() {
                   <ArrowLeft className="w-4 h-4" /> Back to Documentation
                 </Link>
 
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                    <BookOpen className="w-5 h-5 text-blue-400" />
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                    <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
                   </div>
                   <Badge variant="accent">{article.category}</Badge>
                 </div>
 
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-100 mb-4">
+                <h1 className="text-xl sm:text-3xl md:text-4xl font-bold text-gray-100 mb-3 sm:mb-4">
                   {article.title}
                 </h1>
 
-                <p className="text-gray-400 mb-10">{article.description}</p>
+                <p className="text-xs sm:text-base text-gray-400 mb-6 sm:mb-10">{article.description}</p>
 
                 <div className="space-y-1">
                   {contentElements}
