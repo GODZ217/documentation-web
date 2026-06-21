@@ -847,4 +847,809 @@ Identifies project dependencies with known, published vulnerabilities (CVEs).
 DevSecOps transforms security from a gate to an integrated part of the development process. Automating security checks in CI/CD pipelines enables teams to deliver secure software faster while maintaining compliance.
 `,
   },
+  {
+    slug: "openshift-platform-implementation",
+    title: "OpenShift Container Platform Implementation",
+    description: "Enterprise OpenShift implementation guide covering platform architecture, project configuration, security policies, and production operations.",
+    category: "Platform Engineering",
+    content: `
+## Introduction
+
+Red Hat OpenShift Container Platform (OCP) is an enterprise Kubernetes platform that provides automated operations, centralized management, and security-focused container orchestration for mission-critical workloads.
+
+## Fundamental Concept
+
+### OpenShift vs Kubernetes
+
+OpenShift extends Kubernetes with additional enterprise features: integrated container registry, automated CI/CD pipelines (OpenShift Pipelines), service mesh (OpenShift Service Mesh), serverless (OpenShift Serverless), and a web console with built-in monitoring and logging.
+
+### Platform Architecture
+
+OpenShift architecture consists of:
+
+- **Control Plane Nodes**: Run API server, controller manager, scheduler, and etcd
+- **Worker Nodes**: Run application workloads in containers
+- **Infrastructure Nodes**: Host registry, logging, monitoring, and router components
+- **Router**: External traffic ingress using HAProxy
+- **Internal Registry**: Integrated container image storage
+
+## Architecture
+
+\`\`\`
+┌─────────────────────────────────────────────┐
+│              OpenShift Cluster               │
+│  ┌───────────────────────────────────────┐  │
+│  │          Control Plane (3x)           │  │
+│  │  ┌─────────┐ ┌────────┐ ┌──────────┐ │  │
+│  │  │ API Svr │ │ Sched  │ │ Ctrl Mgr │ │  │
+│  │  └─────────┘ └────────┘ └──────────┘ │  │
+│  │  ┌──────────────────────────────────┐ │  │
+│  │  │            etcd                  │ │  │
+│  │  └──────────────────────────────────┘ │  │
+│  └───────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────┐  │
+│  │           Worker Nodes (Nx)           │  │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────┐  │  │
+│  │  │  Router  │ │ Registry │ │ Pods │  │  │
+│  │  └──────────┘ └──────────┘ └──────┘  │  │
+│  └───────────────────────────────────────┘  │
+│  ┌───────────────────────────────────────┐  │
+│  │     Infrastructure Nodes              │  │
+│  │  ┌────────┐ ┌──────────┐ ┌────────┐  │  │
+│  │  │Monitor │ │ Logging  │ │ Backup │  │  │
+│  │  └────────┘ └──────────┘ └────────┘  │  │
+│  └───────────────────────────────────────┘  │
+└─────────────────────────────────────────────┘
+\`\`\`
+
+## Workflow
+
+\`\`\`
+Project Request → Namespace Creation → Network Policy → 
+Service Account → Deployment Config → Route → Service → Running Application
+\`\`\`
+
+## Installation
+
+\`\`\`bash
+# Prerequisites: RHEL 9.x, valid subscription
+# Install OpenShift CLI
+subscription-manager repos --enable rhocp-4.14-for-rhel-9-x86_64-rpms
+dnf install openshift-clients
+
+# Install OpenShift Cluster using IPI (Installer Provisioned Infrastructure)
+./openshift-install create cluster --dir=install-dir
+
+# Verify cluster
+oc get nodes
+oc get clusteroperators
+oc whoami
+\`\`\`
+
+## Configuration
+
+### Project & Namespace Configuration
+
+\`\`\`yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production-app
+  annotations:
+    openshift.io/description: Production application namespace
+    openshift.io/display-name: Production Application
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress
+  namespace: production-app
+spec:
+  podSelector: {}
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: openshift-ingress
+  policyTypes:
+  - Ingress
+\`\`\`
+
+### Deployment with Security Context
+
+\`\`\`yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: enterprise-app
+  namespace: production-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: enterprise-app
+  template:
+    metadata:
+      labels:
+        app: enterprise-app
+    spec:
+      serviceAccountName: app-sa
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: app
+        image: registry.example.com/app:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+\`\`\`
+
+## Commands
+
+### OpenShift CLI (oc)
+
+\`\`\`bash
+# Project management
+oc new-project production-app
+oc get projects
+oc project production-app
+
+# Pod management
+oc get pods
+oc describe pod <pod-name>
+oc logs -f <pod-name>
+oc exec -it <pod-name> -- bash
+
+# Deployment management
+oc get deployments
+oc scale deployment/enterprise-app --replicas=5
+oc rollout status deployment/enterprise-app
+oc rollout undo deployment/enterprise-app
+
+# Route and Service
+oc expose service enterprise-app
+oc get routes
+oc get services
+\`\`\`
+
+### OpenShift Platform Admin
+
+\`\`\`bash
+# Cluster status
+oc get nodes -o wide
+oc get clusteroperators
+oc adm top nodes
+oc describe node <node-name>
+
+# Node management
+oc adm cordon <node>
+oc adm drain <node>
+oc adm uncordon <node>
+
+# Upgrade cluster
+oc adm upgrade --to-latest
+oc adm upgrade --to=4.14.10
+\`\`\`
+
+## Best Practices
+
+- Use Infrastructure nodes for platform components (registry, logging, monitoring)
+- Implement Network Policies for micro-segmentation
+- Use Pod Disruption Budgets for high availability
+- Configure cluster autoscaling for worker nodes
+- Enable etcd backup and disaster recovery procedures
+- Use SCC (Security Context Constraints) for pod security
+- Implement quota management per namespace
+
+## Security Considerations
+
+- Apply SCC (Security Context Constraints) appropriately
+- Use encrypted routes with proper TLS termination
+- Implement OAuth integration with enterprise SSO
+- Enable Network Policy enforcement
+- Regular vulnerability scanning with Red Hat Quay
+- Enable audit logging at cluster level
+- Use Service Mesh for mTLS between services
+
+## Conclusion
+
+OpenShift provides a robust enterprise Kubernetes platform with integrated security, CI/CD, and operational tooling. Proper platform configuration, security policies, and automation enable reliable, production-grade container orchestration at scale.
+`,
+  },
+  {
+    slug: "enterprise-ci-cd-devsecops",
+    title: "Enterprise CI/CD & DevSecOps Pipeline",
+    description: "Enterprise-grade CI/CD implementation with Jenkins, GitLab, SonarQube, and integrated security scanning across the software delivery lifecycle.",
+    category: "CI/CD",
+    content: `
+## Introduction
+
+Enterprise CI/CD pipelines integrate continuous integration, delivery, and deployment with security scanning at every stage — enabling rapid, reliable, and secure software delivery at scale.
+
+## Fundamental Concept
+
+### Enterprise Pipeline Architecture
+
+Enterprise CI/CD consists of interconnected stages that automate the entire software delivery lifecycle:
+
+- **Source**: Code management with Git or GitLab
+- **Build**: Compile, package, and containerize applications
+- **Test**: Unit, integration, and end-to-end testing
+- **Security**: SAST, DAST, dependency scanning, container scanning
+- **Deploy**: Progressive deployment to dev, staging, production
+- **Monitor**: Application performance and security monitoring
+
+### Tools Integration
+
+Modern enterprise pipelines integrate multiple tools:
+- **Jenkins/GitLab CI**: Pipeline orchestration
+- **SonarQube**: Code quality and static analysis
+- **Trivy/Snyk**: Container and dependency scanning
+- **Nexus/Artifactory**: Artifact repository management
+- **OpenShift/Kubernetes**: Deployment target
+
+## Architecture
+
+\`\`\`
+┌─────────────────────────────────────────────────────────┐
+│                 CI/CD Pipeline Architecture              │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Developer → GitLab/Git → Jenkins/GitLab CI             │
+│                              │                           │
+│                    ┌─────────┴──────────┐               │
+│                    │    Pipeline        │               │
+│                    └─────────┬──────────┘               │
+│                              │                           │
+│  ┌───────────┬───────────┬───┴────┬───────────┬──────┐  │
+│  │  Build    │   Unit    │ SAST   │ Container │ Deploy│  │
+│  │  Compile  │   Test    │Quality │  Scan     │       │  │
+│  └───────────┴───────────┴────────┴───────────┴──────┘  │
+│                              │                           │
+│                    ┌─────────┴──────────┐               │
+│                    │  OpenShift/K8s     │               │
+│                    │  Dev → Stg → Prod  │               │
+│                    └────────────────────┘               │
+└─────────────────────────────────────────────────────────┘
+\`\`\`
+
+## Workflow
+
+\`\`\`
+Developer Push → GitLab Webhook → Jenkins Pipeline →
+  → Build Image → Unit Test → SonarQube Scan →
+  → Trivy Scan → Deploy to Dev → Integration Test →
+  → Deploy to Staging → E2E Test → Deploy to Production
+\`\`\`
+
+## Installation
+
+### Jenkins on OpenShift
+
+\`\`\`bash
+# Deploy Jenkins via OpenShift template
+oc new-project cicd-tools
+oc new-app jenkins-persistent \
+  -p MEMORY_LIMIT=2Gi \
+  -p VOLUME_CAPACITY=10Gi \
+  -p JENKINS_IMAGE_STREAM_TAG=jenkins:2
+
+# Verify deployment
+oc get pods -l name=jenkins
+oc get route jenkins
+\`\`\`
+
+### GitLab Runner
+
+\`\`\`bash
+# Install GitLab Runner via Helm
+helm repo add gitlab https://charts.gitlab.io
+helm upgrade --install gitlab-runner gitlab/gitlab-runner \
+  --namespace cicd-tools \
+  --set gitlabUrl=https://gitlab.example.com \
+  --set runnerRegistrationToken=<token>
+\`\`\`
+
+## Configuration
+
+### Jenkins Pipeline (Jenkinsfile)
+
+\`\`\`groovy
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh 'docker build -t app:latest .'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh 'npm test'
+            }
+        }
+        
+        stage('Code Quality') {
+            steps {
+                sh '''
+                sonar-scanner \
+                  -Dsonar.projectKey=myapp \
+                  -Dsonar.sources=. \
+                  -Dsonar.host.url=http://sonarqube:9000
+                '''
+            }
+        }
+        
+        stage('Security Scan') {
+            steps {
+                sh 'trivy image --severity HIGH,CRITICAL app:latest'
+            }
+        }
+        
+        stage('Deploy to Dev') {
+            steps {
+                sh 'oc apply -f k8s/overlays/dev'
+            }
+        }
+        
+        stage('Deploy to Production') {
+            input message: 'Deploy to production?'
+            steps {
+                sh 'oc apply -f k8s/overlays/prod'
+            }
+        }
+    }
+    
+    post {
+        always {
+            junit '**/test-results/**/*.xml'
+        }
+    }
+}
+\`\`\`
+
+### GitLab CI Pipeline
+
+\`\`\`yaml
+stages:
+  - build
+  - test
+  - security
+  - deploy
+
+variables:
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+
+build:
+  stage: build
+  script:
+    - docker build -t app:$IMAGE_TAG .
+    - docker tag app:$IMAGE_TAG registry.example.com/app:$IMAGE_TAG
+    - docker push registry.example.com/app:$IMAGE_TAG
+
+test:
+  stage: test
+  script:
+    - npm ci
+    - npm run test:ci
+  artifacts:
+    reports:
+      junit: junit.xml
+
+code_quality:
+  stage: test
+  script:
+    - sonar-scanner
+  only:
+    - main
+
+security_scan:
+  stage: security
+  script:
+    - trivy image --severity HIGH,CRITICAL registry.example.com/app:$IMAGE_TAG
+  only:
+    - main
+
+deploy_dev:
+  stage: deploy
+  script:
+    - oc apply -f k8s/overlays/dev
+  environment:
+    name: dev
+
+deploy_prod:
+  stage: deploy
+  script:
+    - oc apply -f k8s/overlays/prod
+  environment:
+    name: production
+  when: manual
+\`\`\`
+
+## Standardized Deployment Process
+
+Standardized deployment ensures consistency across teams:
+
+1. **GitFlow Branching**: main, develop, feature/hotfix branches
+2. **Semantic Versioning**: vMAJOR.MINOR.PATCH tagging
+3. **Environment Promotion**: Dev → Staging → Production
+4. **Approval Gates**: Manual approval for production
+5. **Rollback Strategy**: Automated rollback on failure
+6. **Artifact Management**: All artifacts stored in Nexus/Artifactory
+
+## Best Practices
+
+- Standardize pipeline templates across teams
+- Implement approval gates for production deployments
+- Cache dependencies to speed up pipeline execution
+- Use parallel stages for independent tasks
+- Implement artifact versioning and retention policies
+- Monitor pipeline metrics and SLAs
+- Use infrastructure-as-code for pipeline configuration
+
+## Security Considerations
+
+- Integrate SAST scanning at commit stage
+- Container image scanning before registry push
+- Dependency vulnerability scanning (OWASP DC)
+- Secrets management with Vault or sealed secrets
+- SBOM (Software Bill of Materials) generation
+- Supply chain security with image signing (Cosign)
+- Regular pipeline audit and compliance reporting
+
+## Conclusion
+
+Enterprise CI/CD pipelines with integrated DevSecOps practices enable organizations to deliver software faster while maintaining quality and security. Standardized pipelines reduce deployment failures and increase release velocity.
+`,
+  },
+  {
+    slug: "infrastructure-automation-platform-engineering",
+    title: "Infrastructure Automation & Platform Engineering",
+    description: "Enterprise infrastructure automation covering Red Hat Satellite, Kafka operations, monitoring, and platform engineering best practices.",
+    category: "Platform Engineering",
+    content: `
+## Introduction
+
+Platform engineering focuses on building internal developer platforms and automating infrastructure operations. This article covers enterprise-scale infrastructure automation including patch management, data streaming, monitoring, and virtualization management.
+
+## Fundamental Concept
+
+### Platform Engineering
+
+Platform engineering creates self-service capabilities for development teams while standardizing infrastructure operations. Key components include:
+
+- **Automation**: Scripted provisioning, configuration, and operations
+- **Self-Service**: Developer portals and API-driven infrastructure
+- **Standardization**: Consistent configurations and deployment patterns
+- **Observability**: Comprehensive monitoring, logging, and alerting
+
+### Enterprise Infrastructure Components
+
+- **Red Hat Satellite**: Patch management and provisioning for RHEL
+- **Kafka Confluent**: Data streaming platform for event-driven architecture
+- **Grafana/Prometheus**: Monitoring and alerting stack
+- **VMware vSphere**: Virtualization infrastructure
+- **Red Hat Enterprise Linux**: Enterprise operating system
+
+## Architecture
+
+\`\`\`
+┌────────────────────────────────────────────────────┐
+│            Enterprise Platform Architecture         │
+├────────────────────────────────────────────────────┤
+│                                                     │
+│  ┌──────────────────────────────────────────────┐  │
+│  │          Infrastructure Automation           │  │
+│  │  ┌─────────┐ ┌──────────┐ ┌───────────────┐ │  │
+│  │  │Satellite│ │  Ansible │ │  Automation   │ │  │
+│  │  │  Mgmt   │ │  Tower   │ │   Scripts     │ │  │
+│  │  └─────────┘ └──────────┘ └───────────────┘ │  │
+│  └──────────────────────────────────────────────┘  │
+│                                                     │
+│  ┌──────────────────────────────────────────────┐  │
+│  │              Data Streaming                  │  │
+│  │  ┌────────┐ ┌──────────┐ ┌────────────────┐ │  │
+│  │  │ Kafka  │ │Connect   │ │ Schema Registry│ │  │
+│  │  │ Brokers│ │ Workers  │ │                │ │  │
+│  │  └────────┘ └──────────┘ └────────────────┘ │  │
+│  └──────────────────────────────────────────────┘  │
+│                                                     │
+│  ┌──────────────────────────────────────────────┐  │
+│  │            Monitoring & Observability        │  │
+│  │  ┌─────────┐ ┌──────────┐ ┌──────────────┐  │  │
+│  │  │Grafana  │ │Prometheus│ │    Alert     │  │  │
+│  │  │Dashboard│ │  Metrics │ │   Manager    │  │  │
+│  │  └─────────┘ └──────────┘ └──────────────┘  │  │
+│  └──────────────────────────────────────────────┘  │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+\`\`\`
+
+## Workflow
+
+\`\`\`
+Infrastructure Automation Flow:
+Request → Automation → Provisioning → Configuration → Monitoring → Operations
+
+Patch Management Flow:
+Vendor Release → Satellite Sync → Test Group → Production Rollout → Validation
+
+Data Streaming Flow:
+Producer → Kafka Broker → Stream Processing → Consumer → Analytics/Storage
+\`\`\`
+
+## Red Hat Satellite Implementation
+
+### Architecture
+
+\`\`\`
+Satellite Server
+    ├── Capsule Server (Data Center 1)
+    │   └── RHEL Hosts (500+ VMs)
+    ├── Capsule Server (Data Center 2)
+    │   └── RHEL Hosts (500+ VMs)
+    └── Capsule Server (DMZ)
+        └── RHEL Hosts (100+ VMs)
+\`\`\`
+
+### Configuration
+
+\`\`\`bash
+# Register host to Satellite
+subscription-manager register \
+  --org="ExampleOrg" \
+  --activationkey="rhel-8-prod"
+
+# Apply errata
+dnf update --security
+
+# Satellite provisioning template (Kickstart)
+# Managed via Satellite Web UI or Hammer CLI
+hammer host create \
+  --name "web-server-01" \
+  --organization "ExampleOrg" \
+  --location "DC1" \
+  --hostgroup "RHEL8-Prod" \
+  --compute-resource "vCenter"
+\`\`\`
+
+## Kafka Confluent Administration
+
+### Architecture
+
+\`\`\`
+┌──────────┐   ┌──────────┐   ┌──────────┐
+│Producer 1│   │Producer 2│   │Producer N│
+└────┬─────┘   └────┬─────┘   └────┬─────┘
+     └──────────────┼──────────────┘
+                    ▼
+       ┌────────────────────┐
+       │  Kafka Cluster     │
+       │  Broker 1/2/3      │
+       │  (Replication=3)   │
+       └────────────────────┘
+                    │
+     ┌──────────────┼──────────────┐
+     ▼              ▼              ▼
+┌──────────┐ ┌──────────┐ ┌──────────┐
+│Consumer 1│ │Consumer 2│ │Consumer N│
+└──────────┘ └──────────┘ └──────────┘
+\`\`\`
+
+### Commands
+
+\`\`\`bash
+# Check cluster status
+kafka-broker-api-versions --bootstrap-server localhost:9092
+
+# Topic management
+kafka-topics --bootstrap-server localhost:9092 --list
+kafka-topics --bootstrap-server localhost:9092 \
+  --describe --topic production-events
+
+# Consumer group monitoring
+kafka-consumer-groups --bootstrap-server localhost:9092 \
+  --group app-consumer --describe
+
+# Performance monitoring
+kafka-run-class kafka.tools.JmxTool \
+  --object-name kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec
+\`\`\`
+
+### Migration Procedure
+
+\`\`\`bash
+# 1. Add new brokers to cluster
+# 2. Generate partition reassignment plan
+kafka-reassign-partitions --bootstrap-server localhost:9092 \
+  --generate --topics-to-move-json-file topics.json \
+  --broker-list "1,2,3,4,5"
+
+# 3. Execute reassignment
+kafka-reassign-partitions --bootstrap-server localhost:9092 \
+  --execute --reassignment-json-file reassign.json
+
+# 4. Verify completion
+kafka-reassign-partitions --bootstrap-server localhost:9092 \
+  --verify --reassignment-json-file reassign.json
+
+# 5. Remove old brokers
+# Ensure no data loss and minimal downtime
+\`\`\`
+
+## Monitoring Automation
+
+### Grafana Dashboard Configuration
+
+\`\`\`json
+{
+  "dashboard": {
+    "title": "OpenShift Platform Overview",
+    "panels": [
+      {
+        "title": "Cluster CPU Utilization",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate)"
+          }
+        ]
+      },
+      {
+        "title": "Kafka Broker Throughput",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(kafka_server_brokertopicmetrics_messagesin_total)"
+          }
+        ]
+      },
+      {
+        "title": "VM Resource Usage",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "100 - (avg(vmware_vm_cpu_usage) by (vm_name))"
+          }
+        ]
+      }
+    ]
+  }
+}
+\`\`\`
+
+### Prometheus Alert Rules
+
+\`\`\`yaml
+groups:
+  - name: platform-alerts
+    rules:
+      - alert: HighClusterCPU
+        expr: sum(node_cpu_seconds_total{mode="idle"}) / sum(node_cpu_seconds_total) < 0.2
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Cluster CPU utilization above 80%"
+
+      - alert: KafkaConsumerLag
+        expr: kafka_consumer_lag > 1000
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka consumer lag detected"
+
+      - alert: HighDiskUsage
+        expr: node_filesystem_avail_bytes / node_filesystem_size_bytes < 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disk usage above 90%"
+\`\`\`
+
+## Operations & Maintenance
+
+### OpenShift Administration
+
+\`\`\`bash
+# Upgrade OpenShift cluster
+oc adm upgrade --to-latest
+oc adm upgrade --to=4.14.10
+
+# Monitor cluster health
+oc get clusteroperators
+oc describe clusteroperator <name>
+
+# Capacity planning
+oc adm top nodes
+oc adm top pods --all-namespaces
+
+# Troubleshooting
+oc get events --all-namespaces
+oc adm must-gather
+oc adm inspect ns/<namespace>
+\`\`\`
+
+### Linux Administration
+
+\`\`\`bash
+# System hardening
+systemctl stop <unnecessary-services>
+dnf install scap-security-guide
+oscap xccdf eval \
+  --profile xccdf_org.ssgproject.content_profile_cis \
+  --report report.html /usr/share/xml/scap/ssg/content/ssg-rhel8-ds.xml
+
+# Performance troubleshooting
+top
+vmstat 1 10
+iostat -x 1 10
+sar -u 1 10
+\`\`\`
+
+### VMware Administration
+
+\`\`\`bash
+# Using govc CLI
+govc datastore.info
+govc find / -type m
+govc vm.info production-app-01
+
+# Resource monitoring
+govc metric.sample production-app-01 cpu.usage.average
+govc metric.sample production-app-01 mem.usage.average
+\`\`\`
+
+## Best Practices
+
+- Automate patch management with Satellite content views
+- Implement canary deployments for infrastructure changes
+- Use Infrastructure as Code for all platform configurations
+- Maintain runbooks for common operational procedures
+- Implement capacity planning and right-sizing
+- Regular disaster recovery drills
+- Document architecture and operational procedures
+
+## Troubleshooting Methodology
+
+1. **Identify**: Collect symptoms, check monitoring dashboards
+2. **Isolate**: Determine scope — application, platform, or infrastructure
+3. **Analyze**: Review logs, metrics, and events
+4. **Resolve**: Apply fix or workaround
+5. **Verify**: Confirm resolution and monitor for recurrence
+6. **Document**: Update runbook and create RCA
+
+## Security Considerations
+
+- Use Satellite content filters to enforce security errata
+- Implement CIS benchmarks for RHEL hardening
+- Regular vulnerability scanning and remediation
+- Secure Kafka with TLS encryption and ACLs
+- Implement backup and disaster recovery for all platforms
+- Role-based access control for platform management
+- Audit logging and SIEM integration
+
+## Conclusion
+
+Platform engineering and infrastructure automation enable organizations to manage enterprise-scale infrastructure efficiently. Automating patch management, monitoring, and operations reduces manual effort, improves reliability, and ensures security compliance.
+`,
+  },
 ]

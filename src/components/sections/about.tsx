@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Shield, Brain, Cloud, Lock, Code2, Rocket } from "lucide-react"
+import { Shield, Brain, Cloud, Lock, Code2, Rocket, CheckCircle2 } from "lucide-react"
 
 const highlights = [
   {
@@ -33,6 +33,22 @@ const highlights = [
     icon: Shield,
     title: "Platform Engineering",
     description: "Building internal developer platforms that enable teams to ship faster and more securely.",
+  },
+]
+
+const experience = [
+  {
+    company: "Enterprise Platform Engineering",
+    role: "Platform Engineer / DevOps Engineer",
+    period: "Multiple Enterprise Clients",
+    items: [
+      "OpenShift Container Platform implementation for government and enterprise clients",
+      "CI/CD platform implementation with Jenkins, GitLab, and OpenShift Pipelines",
+      "DevSecOps integration with SonarQube, Trivy, and security scanning automation",
+      "Red Hat Satellite management for 1000+ RHEL VM patch management",
+      "Kafka Confluent administration and storage migration on OpenShift",
+      "Migration projects: application migration to Kubernetes/OpenShift",
+    ],
   },
 ]
 
@@ -70,7 +86,7 @@ export function About() {
           </p>
         </motion.div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {highlights.map((item, index) => (
             <motion.div
               key={item.title}
@@ -88,6 +104,33 @@ export function About() {
             </motion.div>
           ))}
         </div>
+
+        {experience.map((exp, index) => (
+          <motion.div
+            key={exp.company}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="glass rounded-xl p-8"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+              <div>
+                <h3 className="text-xl font-semibold text-gray-100">{exp.role}</h3>
+                <p className="text-sm text-blue-400">{exp.company}</p>
+              </div>
+              <span className="text-sm text-gray-500">{exp.period}</span>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3">
+              {exp.items.map((item) => (
+                <div key={item} className="flex items-start gap-3 text-sm text-gray-400">
+                  <CheckCircle2 className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   )

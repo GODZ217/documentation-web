@@ -79,4 +79,40 @@ export const projects: Project[] = [
     ],
     github: "#",
   },
+  {
+    title: "OpenShift Container Platform",
+    description: "Enterprise OpenShift implementation for government and enterprise clients. Configuration of projects, namespaces, routes, services, deployments, and security policies with CI/CD, SSO, and monitoring integration.",
+    tags: ["OpenShift", "Kubernetes", "Jenkins", "SSO", "Monitoring"],
+    highlights: [
+      "Multi-tenant cluster with RBAC and network policies",
+      "Integrated CI/CD pipeline platform",
+      "High-availability control plane design",
+      "Security-hardened with SCC and OAuth",
+    ],
+    github: "#",
+  },
+  {
+    title: "Kafka Confluent Data Streaming",
+    description: "Storage migration and administration of Kafka Confluent on OpenShift. Performance tuning, topic optimization, and zero-downtime data migration for production event streaming.",
+    tags: ["Kafka", "Confluent", "OpenShift", "Zookeeper"],
+    highlights: [
+      "Zero-downtime storage migration",
+      "Data validation and consistency checks",
+      "Performance tuning — 50% throughput improvement",
+      "Monitoring dashboards for broker metrics",
+    ],
+    github: "#",
+  },
+  {
+    title: "Enterprise Infrastructure Automation",
+    description: "Infrastructure automation with Red Hat Satellite managing 1000+ RHEL VMs, automated provisioning and hardening, and Grafana monitoring dashboards for platform observability.",
+    tags: ["Satellite", "Ansible", "RHEL", "Grafana", "VMware"],
+    highlights: [
+      "Patch management automation for 1000+ VMs",
+      "Automated provisioning and hardening scripts",
+      "Grafana dashboards for platform monitoring",
+      "Reduced operational overhead by 2x",
+    ],
+    github: "#",
+  },
 ]
