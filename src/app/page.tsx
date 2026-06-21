@@ -8,6 +8,7 @@ import { Skills } from "@/components/sections/skills"
 import { Projects } from "@/components/sections/projects"
 import { Contact } from "@/components/sections/contact"
 import { DocsOverview } from "@/components/sections/docs-overview"
+import { TerminalSection } from "@/components/sections/terminal-section"
 
 export default function Home() {
   return (
@@ -19,6 +20,7 @@ export default function Home() {
         <Skills />
         <Projects />
         <DocsOverview />
+        <TerminalSection />
         <Contact />
       </main>
       <Footer />

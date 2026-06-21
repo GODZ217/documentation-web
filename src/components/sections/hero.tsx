@@ -1,9 +1,15 @@
 "use client"
 
 import { motion } from "framer-motion"
+import dynamic from "next/dynamic"
 import { ArrowRight, BookOpen, FolderKanban, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+
+const NetworkBg = dynamic(
+  () => import("@/components/3d/network-background").then((m) => m.NetworkBackground),
+  { ssr: false },
+)
 
 export function Hero() {
   return (
@@ -11,6 +17,7 @@ export function Hero() {
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse-glow" />
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-blue-600/10 rounded-full blur-3xl animate-float" />
+        <NetworkBg />
       </div>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">

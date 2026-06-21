@@ -1,14 +1,20 @@
 "use client"
 
 import { motion } from "framer-motion"
+import dynamic from "next/dynamic"
 import { skillCategories } from "@/data/skills"
 import { Settings, GitBranch, Cloud, Shield } from "lucide-react"
 
-const iconMap: Record<string, React.ElementType> = {
-  Settings: Settings,
-  GitBranch: GitBranch,
-  Cloud: Cloud,
-  Shield: Shield,
+const TechOrbit = dynamic(
+  () => import("@/components/3d/floating-tech-orbit").then((m) => m.FloatingTechOrbit),
+  { ssr: false },
+)
+
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Settings,
+  GitBranch,
+  Cloud,
+  Shield,
 }
 
 export function Skills() {
@@ -62,6 +68,15 @@ export function Skills() {
             )
           })}
         </div>
+
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="mt-16"
+        >
+          <TechOrbit />
+        </motion.div>
       </div>
     </section>
   )
