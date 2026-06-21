@@ -17,7 +17,7 @@ export const projects: Project[] = [
       "Persistent storage with Rook/Ceph",
       "Network policies and RBAC",
     ],
-    github: "#",
+    github: "https://github.com/GODZ217/kubernetes-cluster-deployment",
   },
   {
     title: "GitHub Actions CI/CD",
@@ -29,7 +29,7 @@ export const projects: Project[] = [
       "Automated rollback capability",
       "Slack notifications & reporting",
     ],
-    github: "#",
+    github: "https://github.com/GODZ217/github-actions-ci-cd",
   },
   {
     title: "Terraform AWS Infrastructure",
@@ -41,7 +41,7 @@ export const projects: Project[] = [
       "Multi-environment support (dev/staging/prod)",
       "Security scanning with Checkov",
     ],
-    github: "#",
+    github: "https://github.com/GODZ217/terraform-aws-infrastructure",
   },
   {
     title: "Dockerized Microservices",
@@ -53,7 +53,7 @@ export const projects: Project[] = [
       "Istio service mesh integration",
       "Comprehensive health checks",
     ],
-    github: "#",
+    github: "https://github.com/GODZ217/dockerized-microservices",
   },
   {
     title: "DevSecOps Security Pipeline",
@@ -65,7 +65,7 @@ export const projects: Project[] = [
       "Runtime threat detection",
       "Secrets management with Vault",
     ],
-    github: "#",
+    github: "https://github.com/GODZ217/devsecops-security-pipeline",
   },
   {
     title: "Monitoring Stack Prometheus Grafana",
@@ -77,7 +77,7 @@ export const projects: Project[] = [
       "Log aggregation with Loki",
       "Distributed tracing with Tempo",
     ],
-    github: "#",
+    github: "https://github.com/GODZ217/monitoring-stack-prometheus-grafana",
   },
   {
     title: "OpenShift Container Platform",
@@ -89,7 +89,7 @@ export const projects: Project[] = [
       "High-availability control plane design",
       "Security-hardened with SCC and OAuth",
     ],
-    github: "#",
+    github: "https://github.com/GODZ217/openshift-container-platform",
   },
   {
     title: "Kafka Confluent Data Streaming",
@@ -101,7 +101,7 @@ export const projects: Project[] = [
       "Performance tuning — 50% throughput improvement",
       "Monitoring dashboards for broker metrics",
     ],
-    github: "#",
+    github: "https://github.com/GODZ217/kafka-confluent-data-streaming",
   },
   {
     title: "Enterprise Infrastructure Automation",
@@ -113,6 +113,6 @@ export const projects: Project[] = [
       "Grafana dashboards for platform monitoring",
       "Reduced operational overhead by 2x",
     ],
-    github: "#",
+    github: "https://github.com/GODZ217/enterprise-infrastructure-automation",
   },
 ]
