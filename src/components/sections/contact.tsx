@@ -8,17 +8,17 @@ const contacts = [
   {
     icon: Code2,
     label: "GitHub",
-    href: "https://github.com/godz",
+    href: "https://github.com/GODZ217",
   },
   {
     icon: Globe,
     label: "LinkedIn",
-    href: "https://linkedin.com/in/godz",
+    href: "https://www.linkedin.com/in/rifqi-ferdinand-015ba9246/",
   },
   {
     icon: Mail,
     label: "Email",
-    href: "mailto:godz@example.com",
+    href: "mailto:muhamadrifki0307@gmail.com",
   },
 ]
 
@@ -73,7 +73,7 @@ export function Contact() {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mt-12"
         >
-          <a href="mailto:godz@example.com">
+          <a href="mailto:muhamadrifki0307@gmail.com">
             <Button variant="primary" size="lg">
               <MessageSquare className="w-4 h-4 mr-2" />
               Send a Message
