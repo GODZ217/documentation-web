@@ -9,8 +9,8 @@ Built with Next.js 16, TypeScript, Tailwind CSS, and Framer Motion. Designed wit
 - **Hero Section** — Modern hero with shimmer text, animated CTAs
 - **About Me** — Professional highlights with passion-driven cards
 - **Skills** — Grouped by DevOps, CI/CD, Cloud, Security with badge-style tags
-- **Projects** — 6 project cards with tech stack, highlights, and GitHub links
-- **Documentation** — 5 in-depth articles (Docker, Kubernetes, GitHub Actions, Terraform, DevSecOps)
+- **Projects** — 9 project cards with tech stack, highlights, and GitHub links
+- **Documentation** — 8 in-depth articles (Docker, K8s, CI/CD, Terraform, DevSecOps, OpenShift, Kafka, Infra Automation)
 - **Sidebar Navigation** — GitBook/Docusaurus-style documentation sidebar
 - **Contact** — GitHub, LinkedIn, Email links with glassmorphism cards
 - **Responsive** — Fully responsive mobile and desktop layout
@@ -101,6 +101,9 @@ src/
 3. **Building CI/CD Pipeline with GitHub Actions** — Workflow design, pipeline stages, automation
 4. **Terraform Infrastructure as Code** — IaC principles, state management, terraform workflow
 5. **DevSecOps Pipeline Security Implementation** — Shift-left security, SAST, container scanning, runtime security
+6. **OpenShift Container Platform Engineering** — Architecture, deployment, networking, CI/CD integration
+7. **CI/CD DevSecOps Pipeline Architecture** — Multi-stage pipeline design with security gates, artifact management
+8. **Enterprise Infrastructure Automation** — Multi-cloud provisioning, compliance automation, observability
 
 ## Screenshots
 
@@ -111,6 +114,8 @@ src/
 **Godz** — DevOps & DevSecOps Engineer
 
 - GitHub: [@GODZ217](https://github.com/GODZ217)
+- LinkedIn: [rifqi-ferdinand-015ba9246](https://linkedin.com/in/rifqi-ferdinand-015ba9246)
+- Email: [muhamadrifki0307@gmail.com](mailto:muhamadrifki0307@gmail.com)
 
 ## License
 
